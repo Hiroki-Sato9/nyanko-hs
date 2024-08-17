@@ -1,1 +1,3 @@
 fronted/.cache
+fronted/node_modules
+backend/.env

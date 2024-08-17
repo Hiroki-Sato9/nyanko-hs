@@ -13,7 +13,45 @@ services:
       - "8080:80"
     networks:
       - laravel
+    depends_on:
+      - db
+    command: >
+      sh -c "docker-php-ext-install pdo_mysql &&
+      php artisan migrate &&
+      apache2-foreground
+      "
 
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      - MYSQL_DATABASE=my_database
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user_password
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel
+
+
+  fronted:
+    build: 
+      context: ./fronted
+      dockerfile: Dockerfile
+    container_name: phaser_fronted
+    working_dir: /var/www
+    volumes:
+      - ./fronted:/var/www
+    ports:
+      - "1234:1234"
+    networks:
+      - laravel
 
 networks:
   laravel:
+
+volumes:
+  db_data:
